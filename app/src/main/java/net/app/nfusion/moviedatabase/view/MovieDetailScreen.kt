@@ -1,5 +1,6 @@
 package net.app.nfusion.moviedatabase.view
 
+import android.app.Activity
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,9 +33,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import coil.compose.AsyncImage
 import net.app.nfusion.moviedatabase.R
 import net.app.nfusion.moviedatabase.model.Movie
@@ -41,7 +45,23 @@ import net.app.nfusion.moviedatabase.viewmodel.MovieDetailViewModel
 
 @Composable
 fun MovieDetailScreen(viewModel: MovieDetailViewModel, onBack: () -> Unit) {
+    val view = LocalView.current
+    val context = view.context
+    val currentDarkModeConfig = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    val isDarkThemeActivated = currentDarkModeConfig == Configuration.UI_MODE_NIGHT_YES
     val movie = viewModel.movie.collectAsState().value
+    DisposableEffect(Unit) {
+        val window = (view.context as? Activity)?.window
+        val insetsController = window?.let { WindowCompat.getInsetsController(it, view) }
+        if (!isDarkThemeActivated) {
+            insetsController?.isAppearanceLightStatusBars = false
+        }
+        onDispose {
+            if (!isDarkThemeActivated) {
+                insetsController?.isAppearanceLightStatusBars = true
+            }
+        }
+    }
     if (movie == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(modifier = Modifier.size(100.dp), strokeWidth = 8.dp)
