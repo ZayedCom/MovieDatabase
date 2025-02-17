@@ -1,7 +1,6 @@
 package net.app.nfusion.moviedatabase.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -111,11 +110,16 @@ fun MovieListScreen(viewModel: MovieListViewModel, onMovieSelected: (Movie) -> U
 @Composable
 fun MovieListItem(movie: Movie, onClick: () -> Unit) {
     Card(
+        shape = RoundedCornerShape(12.dp),
         modifier = Modifier
             .padding(8.dp)
-            .aspectRatio(2f / 3f)
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(4.dp)
+            .aspectRatio(2f / 3f),
+        onClick = onClick,
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
